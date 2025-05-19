@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Swipe Product & Reviews</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0;
+    height: 100%;
+    font-family: Arial, sans-serif;
+    overflow: hidden;
+    background: #fafafa;
+  }
+  #container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+  }
+  #product {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.5s ease, height 0.5s ease;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    padding: 20px;
+    z-index: 2;
+  }
+  #product.shrink {
+    height: 40vh;
+    transform: translateY(-15vh) scale(0.9);
+    box-shadow: none;
+    border-radius: 12px;
+  }
+  #product img {
+    width: 250px;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+  }
+  #buyBtn {
+    margin-top: 20px;
+    background: #007bff;
+    border: none;
+    color: white;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  #reviews {
+    position: absolute;
+    top: 100vh;
+    left: 0;
+    width: 100%;
+    height: 60vh;
+    background: #fff;
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    padding: 15px 20px;
+    transition: top 0.5s ease;
+    z-index: 1;
+  }
+  #reviews.show {
+    top: 40vh;
+  }
+  .review {
+    padding: 15px 20px;
+    margin-bottom: 12px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  }
+  .review h4 {
+    margin-bottom: 6px;
+    font-size: 16px;
+    color: #222;
+  }
+  .review p {
+    color: #555;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+  <div id="product">
+    <div id="imageRow" style="margin-top: 20px; display: flex; gap: 15px; justify-content: center; overflow-x: auto; padding-bottom: 10px;">
+  <img 
+    src="JORDAN+TATUM+1+PF.png"
+    alt="Product Image 1"
+    style="width: 180px; height: 180px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.3s ease;"
+    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.2)';"
+    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"
+  />
+  <img 
+    src="png-transparent-unpaired-blue-and-orange-nike-running-shoe-nike-free-air-force-shoe-sneakers-nike-shoes-background-blue-fashion-outdoor-shoe.png" 
+    alt="Product Image 2"
+    style="width: 180px; height: 180px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.3s ease;"
+    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.2)';"
+    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"
+  />
+  <img 
+    src="shoespng.parspng.com_.png"
+    alt="Product Image 3"
+    style="width: 180px; height: 180px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.3s ease;"
+    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.2)';"
+    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"
+  />
+  <img 
+    src="WMNS+AIR+JORDAN+1+ELEVATE+LOW.png"
+    alt="Product Image 4"
+    style="width: 180px; height: 180px; object-fit: cover; border-radius: 8px; cursor: pointer; transition: transform 0.3s ease;"
+    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.2)';"
+    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none';"
+  />
+</div>
+
+    <button id="buyBtn">Buy Now</button>
+  </div>
+
+  <div id="reviews"></div>
+</div>
+
+<script>
+  const product = document.getElementById('product');
+  const reviews = document.getElementById('reviews');
+
+  // Generate 30 dummy reviews
+  for(let i=1; i<=30; i++) {
+    const review = document.createElement('div');
+    review.className = 'review';
+  review.innerHTML = `<h4>Reviewer ${i}</h4><p>This is review #${i}. I really loved the product, highly recommend it!</p>`;
+    reviews.appendChild(review);
+  }
+
+  // Swipe detection variables
+  let startX = 0;
+  let isReviewsVisible = false;
+
+  function showReviews() {
+    if(isReviewsVisible) return;
+    isReviewsVisible = true;
+    product.classList.add('shrink');
+    reviews.classList.add('show');
+  }
+
+  function hideReviews() {
+    if(!isReviewsVisible) return;
+    isReviewsVisible = false;
+    product.classList.remove('shrink');
+    reviews.classList.remove('show');
+  }
+
+  // Touch events
+  window.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  }, {passive:true});
+
+  window.addEventListener('touchend', e => {
+    let endX = e.changedTouches[0].clientX;
+    let diffX = endX - startX;
+
+    if(diffX < -50) { // swipe left
+      showReviews();
+    } else if(diffX > 50) { // swipe right
+      hideReviews();
+    }
+  });
+
+  // Mouse drag support for desktop
+  let mouseDownX = null;
+  window.addEventListener('mousedown', e => {
+    mouseDownX = e.clientX;
+  });
+  window.addEventListener('mouseup', e => {
+    if(mouseDownX === null) return;
+    let diffX = e.clientX - mouseDownX;
+    if(diffX < -50) {
+      showReviews();
+    } else if(diffX > 50) {
+      hideReviews();
+    }
+    mouseDownX = null;
+  });
+
+  // Keyboard support
+  window.addEventListener('keydown', e => {
+    if(e.key === 'ArrowLeft') showReviews();
+    if(e.key === 'ArrowRight') hideReviews();
+  });
+</script>
+
+</body>
+</html>
